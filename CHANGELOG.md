@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `INSTALL-WINDOWS.md` with a group-testing checklist and feedback template.
 - `docs/WINDOWS.md` with the Windows acceptance checklist and known limitations.
 - Repository metadata, bilingual README, changelog, contribution guide, security
-  policy, code of conduct, and cross-platform smoke-test workflow.
+  policy, code of conduct, and a cross-platform smoke-test workflow that passes
+  on Ubuntu and Windows.
 - Package name `dsh-folotoy-ai-passport` for a public repository while remaining
   locally installable as a DSH bundle.
 
