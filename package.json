@@ -1,7 +1,6 @@
 {
   "name": "dsh-folotoy-ai-passport",
   "version": "0.2.0",
-  "private": true,
   "type": "module",
   "description": "Unofficial DSH agent preset and Windows beta test bundle for FoloToy AI Passport projects.",
   "license": "MIT",
@@ -45,12 +44,17 @@
     "url": "https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport/issues"
   },
   "keywords": [
-    "dsh",
-    "deepseek-harness",
-    "folotoy",
-    "ai-passport",
-    "esp32",
     "agent-preset",
+    "ai-passport",
+    "deepseek-harness",
+    "dsh",
+    "dsh-bundle",
+    "dsh-plugin",
+    "esp32",
+    "folotoy",
     "windows-beta"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
