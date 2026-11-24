@@ -2,7 +2,7 @@
 
 版本：`0.2.0`（Windows 兼容 beta）
 
-这是一个给群友测试 **Windows 兼容性** 的本地 DSH 插件包。当前只在 macOS 上做过回归测试，**Windows 实机尚未验证**，所以需要你按下面的清单跑一遍并反馈。
+这是一个给群友测试 **Windows 兼容性** 的本地 DSH 插件包。macOS 已回归测试；GitHub Actions 的 `windows-latest` smoke test 已通过（doctor、scanner 和 `.ps1` 包装），但**真实 Windows 桌面/设备尚未验证**，所以需要你按下面的清单跑一遍并反馈。
 
 测试时不要发布、不要授权、不要上传任何东西。
 

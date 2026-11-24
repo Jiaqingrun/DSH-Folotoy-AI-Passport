@@ -1,8 +1,9 @@
 # Windows notes
 
 Status: the bundle's scripts are implemented with a Python core plus PowerShell
-launchers, but **Windows has not yet been tested on a real machine**. Treat this
-page as the acceptance checklist, not as a verified Windows support statement.
+launchers. The GitHub Actions smoke test passes on `windows-latest`, but
+**Windows has not yet been tested on a real desktop/device**. Treat this page as
+the acceptance checklist, not as a verified Windows support statement.
 
 ## Requirements
 

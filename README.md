@@ -8,6 +8,7 @@
 ![DSH](https://img.shields.io/badge/DSH-%3E%3D0.2.2--rc.5-blue)
 ![Status](https://img.shields.io/badge/status-Windows%20beta-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
+[![validate](https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport/actions/workflows/validate.yml/badge.svg)](https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport/actions/workflows/validate.yml)
 
 ---
 
@@ -35,7 +36,7 @@ bundle，用于辅助 FoloToy AI Passport 项目从工具链搭建、固件构�
 | 版本 | `0.2.0` |
 | macOS | 已在 macOS 上完成回归测试 |
 | Linux | 代码路径已实现，尚未做系统化验证 |
-| Windows | **兼容代码已完成，但尚未在 Windows 实机验证（beta）** |
+| Windows | **兼容代码已完成；CI 已在 windows-latest 通过 smoke test，但尚未在真实 Windows 桌面/设备上验证（beta）** |
 | 商店发布 / 真机烧录 | 不在本仓库测试范围 |
 
 Windows 兼容性的实现方式和未验证边界见
@@ -214,7 +215,7 @@ session and select the **AI Passport** preset.
 | Version | `0.2.0` |
 | macOS | Regression-tested on macOS |
 | Linux | Code paths implemented; not systematically validated |
-| Windows | **Compatibility implemented; not yet validated on real Windows hardware (beta)** |
+| Windows | **Compatibility implemented; CI smoke test passes on windows-latest, but real Windows desktop/device validation is still pending (beta)** |
 | Store publishing / device flashing | Out of scope for this repository's tests |
 
 See [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md) and
