@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "AI Passport",
+    "description": "Unofficial agent preset for FoloToy AI Passport projects: classify a project, build and validate firmware, and prepare a store submission with manual authorization.",
+    "detail": "docs/DETAIL.md"
+  }
+}

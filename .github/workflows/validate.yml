@@ -1,0 +1,52 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate package manifest
+        run: npm pack --dry-run
+
+      - name: Compile Python sources
+        run: python -m compileall -q skills
+
+      - name: Smoke test doctor
+        run: python skills/passport-doctor/scripts/doctor.py
+
+      - name: Smoke test scanner
+        run: python skills/passport-router/scripts/scan_project.py --root . --json
+
+      - name: Smoke test PowerShell launcher
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./skills/passport-doctor/scripts/doctor.ps1

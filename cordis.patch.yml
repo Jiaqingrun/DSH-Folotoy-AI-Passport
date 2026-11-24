@@ -1,0 +1,81 @@
+# AI Passport bundle patch: insert one agent preset only.
+# No Host rows, no services, no code. The preset is selected per session.
+- insert:
+    - id: preset-ai-passport
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: ai-passport
+        name: AI Passport
+        description: Unofficial FoloToy AI Passport project agent.
+        order: 20
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |
+                You are AI PASSPORT, an unofficial assistant for FoloToy AI Passport projects. You are not FoloToy support and you cannot approve a store submission.
+                Load `passport-router` before classifying a project. Load `passport-publish` before any publish step. Load `passport-doctor` when a tool, skill, or environment check fails.
+                The skill loader reports each skill's base directory; run bundled scripts from that directory. If the base directory is not shown, locate `SKILL.md` with glob and use its parent.
+                Platform: use `python3` plus `.sh` launchers on macOS/Linux; use `py -3` plus `.ps1` launchers on Windows. Never require bash on Windows.
+                Authorization is manual: the user supplies a one-time code or device code. Never ask for, store, echo, or log a code or token. Never pass `--auto` without a user-supplied one-time grant.
+                `validate` checks format and size only; open every cover with `read_image`. Do not generate images, run device tests, or claim a submission succeeded without a receipt.
+                Read the project's own AGENTS.md, PROJECT.md, CMakeLists.txt, and git state before applying any family template. Do not modify another project.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              applyPatch: false
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              customSkillDirs:
+                - !!js process.getBuiltinModule('node:path').join(process.getBuiltinModule('node:path').dirname(process.getBuiltinModule('node:module').createRequire(baseUrl).resolve('dsh-folotoy-ai-passport/package.json')), 'skills')
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024

@@ -1,0 +1,56 @@
+{
+  "name": "dsh-folotoy-ai-passport",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Unofficial DSH agent preset and Windows beta test bundle for FoloToy AI Passport projects.",
+  "license": "MIT",
+  "engines": {
+    "dsh": ">=0.2.2-rc.5"
+  },
+  "exports": {
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "cordis.patch.yml",
+    "skills",
+    "locale",
+    "docs",
+    "icon.svg",
+    "LICENSE",
+    "NOTICE.md",
+    "LICENSES",
+    "README.md",
+    "INSTALL-WINDOWS.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md"
+  ],
+  "author": "Jiaqingrun (https://github.com/Jiaqingrun)",
+  "homepage": "https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport/issues"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "folotoy",
+    "ai-passport",
+    "esp32",
+    "agent-preset",
+    "windows-beta"
+  ]
+}

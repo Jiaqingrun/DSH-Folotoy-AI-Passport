@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local secrets and environment
+.env
+.env.*
+*.local
+*.local.*
+
+# Test and release artifacts
+.test*
+dist/
+*.zip
+*.tgz
+*.tar.gz
+
+# Logs
+*.log
