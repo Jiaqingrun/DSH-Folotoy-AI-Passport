@@ -62,7 +62,11 @@ Stop the monitor before handing back the port. Keep raw logs local and sanitize
 secrets before sharing. Route crashes to `passport-debug` if available.
 
 Flashing success and clean logs do not prove screen rendering, audio quality,
-button behavior, RF performance, or sleep current. Report `Build`, `Host tests`,
-`Device tests`, and `Unverified` separately, limiting PASS to checks actually
-observed. If declined or inaccessible, mark device testing NOT RUN and hand
-off the pending steps. No commit, push, or publication is implied.
+button behavior, RF performance, or sleep current. Whenever the input changed,
+exercise all three function buttons (UP/DOWN/OK) including every documented
+short, long, and double action, and compare each on-screen hint with the real
+key. Confirm no function key is dead, duplicated, arbitrary, or misleading; a
+button map that exists only in source is not acceptance. Report `Build`,
+`Host tests`, `Device tests`, and `Unverified` separately, limiting PASS to
+checks actually observed. If declined or inaccessible, mark device testing NOT
+RUN and hand off the pending steps. No commit, push, or publication is implied.

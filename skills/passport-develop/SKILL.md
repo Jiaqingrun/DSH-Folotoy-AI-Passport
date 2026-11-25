@@ -21,6 +21,16 @@ documents. Start with `git status --short --branch`.
    Ask only questions that materially affect the implementation; state reasonable
    defaults. Do not add Wi-Fi, cloud services, new wiring, or paid dependencies
    to an offline request. Missing hardware facts are not assumptions to invent.
+   - **Default target:** when the user asks to create an application or game
+     without naming another platform, build FoloToy AI Passport firmware. Do not
+     silently substitute a desktop, web, mobile, or generic app; confirm only
+     when the user explicitly means a different target.
+   - **Button coverage:** every application/game must use all three function
+     buttons (UP/DOWN/OK) with distinct, logical roles. Give each key a clear
+     short/long/double action where applicable, keep on-screen hints truthful,
+     and avoid dead, duplicated, arbitrary, or accidental bindings. The
+     dedicated power button stays a hardware control. If a proposed design
+     leaves a function button unused, revise the design rather than ship it.
 2. Continue an existing application on its intended branch. For a new application,
    start from the agreed baseline on `feature/*`, preserving dirty work. Do not
    switch, stash, reset, or overwrite someone else's changes to obtain a clean
@@ -57,11 +67,13 @@ to invoke a skill unavailable to the current agent.
 ## Handoff and continuation
 
 Report implemented behavior, actual validation, remaining checks, and the next
-step. Describe the redesigned pages and controls, and check that startup and
-navigation no longer lead to the baseline test UI before calling the application
-complete. For a multi-stage task, keep a concise checkpoint in the application's
-existing project notes: accepted requirements, completed/pending work, exact
-build identity, and device results. If new maintained Markdown is warranted,
+step. Describe the redesigned pages and controls, including what every function
+button does on each screen; check that startup and navigation no longer lead to
+the baseline test UI before calling the application complete. Confirm the button
+map is complete and logical, not merely present in source. For a multi-stage
+task, keep a concise checkpoint in the application's existing project notes:
+accepted requirements, completed/pending work, exact build identity, and device
+results. If new maintained Markdown is warranted,
 use paired documents under `docs/`; never store secrets or raw private logs.
 Do not create a progress-document framework for a small edit.
 

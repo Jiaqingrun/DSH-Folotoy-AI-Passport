@@ -10,6 +10,9 @@ Do not write, build, or publish in this skill. Produce a project card first.
 
 ## 1. Resolve the root
 
+- If the request is to create an application or game and names no other
+  platform, the default target is FoloToy AI Passport firmware. Do not invent a
+  separate desktop/web/mobile project; route the work to `passport-develop`.
 - If the user gave a path, use it.
 - Else use the session working directory.
 - Run `git -C <root> rev-parse --show-toplevel`; if it succeeds, the git root is the project root.

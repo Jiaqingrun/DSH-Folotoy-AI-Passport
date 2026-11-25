@@ -33,7 +33,7 @@ bundle，用于辅助 FoloToy AI Passport 项目从工具链搭建、固件构�
 
 | 项目 | 状态 |
 |---|---|
-| 版本 | `0.2.0` |
+| 版本 | `0.2.1` |
 | macOS | 已在 macOS 上完成回归测试 |
 | Linux | 代码路径已实现，尚未做系统化验证 |
 | Windows | **兼容代码已完成；CI 已在 windows-latest 通过 smoke test，但尚未在真实 Windows 桌面/设备上验证（beta）** |
@@ -55,12 +55,29 @@ Windows 兼容性的实现方式和未验证边界见
 | `passport-publish` | 发布前预检、商店文案检查、dry-run 和受控提交 |
 | `passport-doctor` | 检查 DSH、Python、Git、技能和发布依赖是否就绪 |
 
+### 默认行为
+
+- **默认目标**：用户要求创建任何应用或游戏、但未指定其他平台时，默认实现
+  **FoloToy AI Passport 固件**，不会静默改成桌面、网页或移动端应用。
+- **三键完整使用**：每个应用或游戏必须使用 `UP`/`DOWN`/`OK` 三个功能键，
+  为每个键定义明确、合乎逻辑的短按/长按/双击职责；屏幕提示必须与实体按键
+  一致，禁止空置、重复或容易误触的绑定。专用电源键不当作应用功能键。
+- **首次上传封面**：默认生成一张竖版 **3:4** 的实际游戏/应用渲染图作为封面，
+  优先 `1152×1536`；不得使用占位图、通用设备照或无关图片。本包不内置图像
+  生成模型，使用当前可用的图像工具；如果无法生成或渲染未完成，停下来请求
+  用户，不上传。
+- **更新封面**：更新默认**保留**已发布封面，不重新生成；只有用户明确要求
+  换封面时才传新的。`publish.py` 会在 `--root` 下复用原 3:4 封面，或通过
+  `--previous-cover` 指定。
+
 ### 不包含的内容
 
 - 不包含 FoloToy 固件二进制、封面图片或具体项目文件。
 - 不包含官方 `folotoy-ai-passport-publisher` 技能；该技能需要从 FoloToy 官方发布
   单独安装，并遵守其条款。
 - 不包含账号授权码、token、Cookie、CSRF 或任何发布凭据。
+- 不内置图像生成模型；首次上传封面需要当前可用的图像工具，无法生成时停止，
+  不上传占位图。
 - 不提供默认的真实发布路径：`publish.py` 默认 dry-run，不会自动加 `--auto`。
 
 ### 环境要求
@@ -164,7 +181,8 @@ Windows 上的具体步骤、常见问题和反馈模板见
 ### 开发与验证
 
 ```bash
-python3 -m compileall -q skills
+python3 -m compileall -q skills tests
+python3 -m unittest discover -s tests -v
 npm pack --dry-run
 python3 skills/passport-doctor/scripts/doctor.py
 python3 skills/passport-router/scripts/scan_project.py --root . --json
@@ -212,7 +230,7 @@ session and select the **AI Passport** preset.
 
 | Item | Status |
 |---|---|
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | macOS | Regression-tested on macOS |
 | Linux | Code paths implemented; not systematically validated |
 | Windows | **Compatibility implemented; CI smoke test passes on windows-latest, but real Windows desktop/device validation is still pending (beta)** |
@@ -235,12 +253,33 @@ verification boundaries.
 | `passport-publish` | Preflight, store-copy checks, dry-run, and controlled submission |
 | `passport-doctor` | Check DSH, Python, Git, skills, and publishing prerequisites |
 
+### Defaults
+
+- **Default target:** when the user asks to create an application or game and
+  names no other platform, build **FoloToy AI Passport firmware**. Do not
+  silently substitute a desktop, web, or mobile app.
+- **Full button use:** every application/game must use all three function
+  buttons (`UP`/`DOWN`/`OK`) with distinct, logical short/long/double actions.
+  On-screen hints must match the real keys; no dead, duplicated, or accidental
+  bindings. The dedicated power button is not an application key.
+- **First-upload cover:** generate a portrait **3:4** render of the actual
+  finished game/app as the cover by default, preferably `1152×1536`. Never use a
+  placeholder, generic device photo, or unrelated image. This bundle does not
+  include an image model; use available image tooling. If rendering is
+  unavailable or unfinished, stop and ask the user rather than uploading.
+- **Update cover:** preserve the published cover by default; do not regenerate
+  it. Replace it only when the user explicitly asks. `publish.py` reuses the
+  existing exact 3:4 cover found under `--root`, or the path passed with
+  `--previous-cover`.
+
 ### Not included
 
 - No FoloToy firmware binaries, cover images, or project files.
 - No official `folotoy-ai-passport-publisher` skill. Install it separately from
   FoloToy's official release and follow its terms.
 - No authorization codes, tokens, cookies, CSRF values, or publishing credentials.
+- No bundled image-generation model. A first-upload cover uses available image
+  tooling; when generation is unavailable, stop instead of uploading a placeholder.
 - No automatic publishing path: `publish.py` is dry-run by default and never adds
   `--auto`.
 
@@ -341,6 +380,7 @@ and the feedback template.
 ├── docs/WINDOWS.md           # Windows acceptance checklist (English)
 ├── docs/DETAIL.md            # design and implementation details
 ├── skills/                   # 8 skills
+├── tests/                    # publish cover-policy regression tests
 ├── locale/                   # Chinese/English UI strings
 ├── LICENSE                   # MIT
 ├── NOTICE.md                 # third-party skills and provenance
@@ -351,7 +391,8 @@ and the feedback template.
 ### Development and validation
 
 ```bash
-python3 -m compileall -q skills
+python3 -m compileall -q skills tests
+python3 -m unittest discover -s tests -v
 npm pack --dry-run
 python3 skills/passport-doctor/scripts/doctor.py
 python3 skills/passport-router/scripts/scan_project.py --root . --json

@@ -37,7 +37,10 @@ jobs:
         run: npm pack --dry-run
 
       - name: Compile Python sources
-        run: python -m compileall -q skills
+        run: python -m compileall -q skills tests
+
+      - name: Run publish cover tests
+        run: python -m unittest discover -s tests -v
 
       - name: Smoke test doctor
         run: python skills/passport-doctor/scripts/doctor.py

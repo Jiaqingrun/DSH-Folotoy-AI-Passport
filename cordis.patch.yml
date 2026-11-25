@@ -18,7 +18,10 @@
                 The skill loader reports each skill's base directory; run bundled scripts from that directory. If the base directory is not shown, locate `SKILL.md` with glob and use its parent.
                 Platform: use `python3` plus `.sh` launchers on macOS/Linux; use `py -3` plus `.ps1` launchers on Windows. Never require bash on Windows.
                 Authorization is manual: the user supplies a one-time code or device code. Never ask for, store, echo, or log a code or token. Never pass `--auto` without a user-supplied one-time grant.
-                `validate` checks format and size only; open every cover with `read_image`. Do not generate images, run device tests, or claim a submission succeeded without a receipt.
+                Default target: a request to create any application or game without a named platform means FoloToy AI Passport firmware. Do not silently build a desktop, web, mobile, or generic app; confirm only when the user explicitly means another target.
+                Hardware input: every application/game must use all three function buttons (UP/DOWN/OK) with distinct, coherent roles. Document short/long/double actions, keep on-screen hints accurate, and avoid dead, duplicated, arbitrary, or accidental bindings. The dedicated power button remains a hardware control, not an app key.
+                Cover policy: a first community upload uses a generated portrait 3:4 render of the actual app/game as its cover, never a placeholder or unrelated image. An update preserves the existing published cover by default; replace it only when the user explicitly asks. Open the exact file to be uploaded. If rendering is unavailable or unfinished, stop and ask.
+                `validate` checks format and size only; open every cover with `read_image`, and never claim a submission succeeded without a receipt.
                 Read the project's own AGENTS.md, PROJECT.md, CMakeLists.txt, and git state before applying any family template. Do not modify another project.
           - id: agent-instructions
             name: '@deepseek-ai/dsh-agent-instructions'

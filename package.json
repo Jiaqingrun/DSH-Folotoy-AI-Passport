@@ -1,6 +1,6 @@
 {
   "name": "dsh-folotoy-ai-passport",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Unofficial DSH agent preset and Windows beta test bundle for FoloToy AI Passport projects.",
   "license": "MIT",
@@ -32,7 +32,8 @@
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
-    "CODE_OF_CONDUCT.md"
+    "CODE_OF_CONDUCT.md",
+    "!**/__pycache__/**"
   ],
   "author": "Jiaqingrun (https://github.com/Jiaqingrun)",
   "homepage": "https://github.com/Jiaqingrun/DSH-Folotoy-AI-Passport#readme",

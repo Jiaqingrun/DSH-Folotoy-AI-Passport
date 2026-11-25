@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-25
+
+### Added
+
+- Default target rule: an unspecified "create an app/game" request means
+  FoloToy AI Passport firmware, not a desktop/web/mobile app.
+- Full-button rule: every application/game must give UP/DOWN/OK distinct,
+  logical short/long/double roles with truthful on-screen hints.
+- First-upload cover policy: generate a portrait 3:4 render of the actual
+  finished app/game; stop if rendering is unavailable or unfinished.
+- Update cover policy: preserve the published cover by default. `publish.py`
+  finds the existing exact 3:4 cover under `--root`, or accepts
+  `--previous-cover`, and reuses it; `--cover` is only for an intentional change.
+- Regression tests for the new-upload guard, update cover preservation, explicit
+  cover replacement, and `--previous-cover` validity; CI now runs them.
+- Self-audit record: `docs/AUDIT-0.2.1.md`.
+
+### Changed
+
+- `publish.py` no longer treats a cover as mandatory input for updates; it
+  requires one for a new upload and explains how to generate it.
+- Agent persona, router, develop, publish, and device-test guidance now include
+  the target, button, and cover defaults.
+- Version bumped to `0.2.1`.
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
