@@ -40,6 +40,24 @@ description: 根据用户需求实现或扩展 FoloToy AI Passport 应用，组�
 5. 修改中运行针对性测试，交付前运行完整仓库门禁。修复本次修改引入的失败，
    不屏蔽检查，不把无关失败扩大成当前任务。环境阻碍应附证据和可执行下一步。
 
+## 保持项目文件夹同步
+
+新应用的固件／应用名称确定后，或已有应用改名后，立即把**该应用的项目根
+目录**改成最终名称；在继续其余工作前完成这一步。
+
+- 使用技能加载器给出的 base 目录运行内置脚本：
+  - macOS/Linux：`python3 <base>/scripts/rename_project.py --root <项目根目录> --name "<最终名称>" --apply`
+  - Windows：`py -3 <base>\scripts\rename_project.py --root <项目根目录> --name "<最终名称>" --apply`
+  脚本默认 dry-run；名称确定后用一次 `--apply`。空格及路径／shell 标点会变成
+  连字符；Unicode 字母保留；Windows 保留设备名会加 `app-` 前缀。
+- 只改应用根目录。脚本会拒绝 DSH bundle／profile、其他项目、链接式 git
+  worktree、符号链接、用户主目录、文件系统根目录或已存在的目标。被拒绝时
+  停下报告，不得用 `mv`、`Rename-Item` 或强制参数绕过。
+- 如果项目根目录就是当前 cwd，脚本会输出 `next cwd`。把会话切到该路径并
+  重新执行 `git status --short --branch`，避免后续命令仍在旧目录上运行。
+- 文件夹已经是规范名称时，脚本报告 `unchanged` 并不做修改；之后固件名再
+  变更时重复同一步骤。
+
 ## 按需使用专项流程
 
 安装了下列技能时按阶段使用；未安装则读取对应仓库文档完成同范围流程。

@@ -51,6 +51,28 @@ documents. Start with `git status --short --branch`.
    sweep unrelated failures into the task. Report environmental blockers with
    their evidence and the remaining actionable step.
 
+## Keep the project folder in sync
+
+As soon as a new application's firmware/app name is finalized, or an existing
+application is renamed, rename **that application's project root folder** to
+match the final name. Do this before continuing with the rest of the work.
+
+- Run the bundled helper with the skill base directory reported by the loader:
+  - macOS/Linux: `python3 <base>/scripts/rename_project.py --root <project-root> --name "<final name>" --apply`
+  - Windows: `py -3 <base>\scripts\rename_project.py --root <project-root> --name "<final name>" --apply`
+  The helper is dry-run by default; run it once with `--apply` after the name is
+  final. Spaces and path/shell punctuation become hyphens; Unicode letters are
+  preserved; Windows-reserved device names get an `app-` prefix.
+- Only rename the app root. The helper refuses the DSH bundle/profile, another
+  project, a linked git worktree, a symlink, the home directory, a filesystem
+  root, or an existing target. Stop and report a refusal; do not bypass it with
+  `mv`, `Rename-Item`, or a force flag.
+- If the project root was the active cwd, the helper reports `next cwd`. Switch
+  the session to that path and run `git status --short --branch` before
+  continuing, so later commands do not run against a stale directory.
+- If the folder already has the normalized name, the helper reports `unchanged`
+  and does nothing. A later firmware-name change repeats the same step.
+
 ## Route specialist work only when needed
 
 If these skills are installed, use them for their stage. Otherwise read the

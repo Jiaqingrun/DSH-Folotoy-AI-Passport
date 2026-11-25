@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-25
+
+### Added
+
+- Project-folder rename policy: when a firmware/app name is finalized or
+  changed, rename that app's project root to the normalized name automatically.
+- `skills/passport-develop/scripts/rename_project.py`, a dry-run-by-default
+  helper that preserves Unicode names, normalizes unsafe punctuation, prefixes
+  Windows-reserved names, and refuses DSH bundles/profiles, linked worktrees,
+  symlinks, home/root, and existing targets.
+- Nine regression tests for the rename helper (dry-run, apply, Unicode,
+  existing target, bundle refusal, worktree refusal, unchanged, JSON record).
+- Persona, develop skill (zh/en), README, and design notes document the rename
+  rule and cwd refresh.
+- Self-audit record: `docs/AUDIT-0.2.2.md`.
+
+### Changed
+
+- Version bumped to `0.2.2`.
+
 ## [0.2.1] - 2026-11-25
 
 ### Added

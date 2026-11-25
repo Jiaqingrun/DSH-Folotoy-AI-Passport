@@ -15,7 +15,7 @@ Auditor: AI Passport agent (self-audit; not an independent security review)
 | Doctor | `python3 skills/passport-doctor/scripts/doctor.py` | PASS (publisher path warnings expected) |
 | Project scanner | `python3 skills/passport-router/scripts/scan_project.py --root . --json` | PASS; class C is expected for the bundle, not an app |
 | Whitespace | `git diff --check` | PASS |
-| Credential/path scan | ripgrep over credentials, tokens, `/Users/qr` | No secrets or local absolute paths found |
+| Credential/path scan | ripgrep over credentials, tokens, and home-directory paths | No secrets or local absolute paths found |
 | Dangerous-call scan | ripgrep over `eval`/`exec`/`os.system`/`system()` | No such calls in bundle scripts |
 
 ## Findings

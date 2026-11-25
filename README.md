@@ -33,7 +33,7 @@ bundle，用于辅助 FoloToy AI Passport 项目从工具链搭建、固件构�
 
 | 项目 | 状态 |
 |---|---|
-| 版本 | `0.2.1` |
+| 版本 | `0.2.2` |
 | macOS | 已在 macOS 上完成回归测试 |
 | Linux | 代码路径已实现，尚未做系统化验证 |
 | Windows | **兼容代码已完成；CI 已在 windows-latest 通过 smoke test，但尚未在真实 Windows 桌面/设备上验证（beta）** |
@@ -59,6 +59,10 @@ Windows 兼容性的实现方式和未验证边界见
 
 - **默认目标**：用户要求创建任何应用或游戏、但未指定其他平台时，默认实现
   **FoloToy AI Passport 固件**，不会静默改成桌面、网页或移动端应用。
+- **文件夹跟随固件名**：固件／应用名称确定或变更后，自动把该应用的项目根
+  目录改成规范名称；只改应用根目录，不改 DSH bundle、其他项目、链接式
+  worktree、符号链接、用户主目录或文件系统根目录。拒绝时停止报告，不强行
+  重命名；重命名后更新会话 cwd 并复查 Git 状态。
 - **三键完整使用**：每个应用或游戏必须使用 `UP`/`DOWN`/`OK` 三个功能键，
   为每个键定义明确、合乎逻辑的短按/长按/双击职责；屏幕提示必须与实体按键
   一致，禁止空置、重复或容易误触的绑定。专用电源键不当作应用功能键。
@@ -230,7 +234,7 @@ session and select the **AI Passport** preset.
 
 | Item | Status |
 |---|---|
-| Version | `0.2.1` |
+| Version | `0.2.2` |
 | macOS | Regression-tested on macOS |
 | Linux | Code paths implemented; not systematically validated |
 | Windows | **Compatibility implemented; CI smoke test passes on windows-latest, but real Windows desktop/device validation is still pending (beta)** |
@@ -258,6 +262,12 @@ verification boundaries.
 - **Default target:** when the user asks to create an application or game and
   names no other platform, build **FoloToy AI Passport firmware**. Do not
   silently substitute a desktop, web, or mobile app.
+- **Folder follows the firmware name:** once the app/firmware name is final or
+  changes, rename that app's project root to the normalized name. Rename only
+  the app root, never the DSH bundle, another project, a linked worktree, a
+  symlink, the home directory, or a filesystem root. If the helper refuses,
+  stop and report; do not force it. After renaming, switch cwd and recheck Git
+  status.
 - **Full button use:** every application/game must use all three function
   buttons (`UP`/`DOWN`/`OK`) with distinct, logical short/long/double actions.
   On-screen hints must match the real keys; no dead, duplicated, or accidental

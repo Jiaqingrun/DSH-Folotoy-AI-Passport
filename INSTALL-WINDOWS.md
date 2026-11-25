@@ -1,6 +1,6 @@
 # AI Passport DSH 插件：Windows 测试包
 
-版本：`0.2.1`（Windows 兼容 beta）
+版本：`0.2.2`（Windows 兼容 beta）
 
 这是一个给群友测试 **Windows 兼容性** 的本地 DSH 插件包。macOS 已回归测试；GitHub Actions 的 `windows-latest` smoke test 已通过（doctor、scanner 和 `.ps1` 包装），但**真实 Windows 桌面/设备尚未验证**，所以需要你按下面的清单跑一遍并反馈。
 

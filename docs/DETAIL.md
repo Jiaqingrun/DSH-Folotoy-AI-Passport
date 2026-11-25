@@ -11,6 +11,7 @@ Unofficial agent preset for FoloToy AI Passport projects. Not affiliated with Fo
 - Defaults to AI Passport firmware when an app/game request names no platform.
 - Requires all three function buttons to have distinct, logical roles.
 - Requires a generated 3:4 render cover for a first upload; updates preserve the published cover.
+- Renames the app's project root folder when its firmware/app name is finalized or changed; refuses DSH bundles, linked worktrees, symlinks, home/root, and existing targets.
 
 ## Requirements
 
