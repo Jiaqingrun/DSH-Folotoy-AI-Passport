@@ -54,6 +54,18 @@ SKIP_DIRS = {
 }
 
 
+def _configure_stdio() -> None:
+    """Avoid cp1252 crashes when a Windows console prints UTF-8 copy."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
 def _fail(message: str, code: int = 2) -> int:
     print(message, file=sys.stderr)
     return code
@@ -213,6 +225,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--execute", dest="execute", action="store_const", const=True)
     parser.set_defaults(execute=False)
     args = parser.parse_args(argv)
+
+    _configure_stdio()
 
     publisher = Path(args.publisher).expanduser() if args.publisher else None
     firmware = Path(args.firmware).expanduser() if args.firmware else None

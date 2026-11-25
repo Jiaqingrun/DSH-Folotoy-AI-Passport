@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Agent persona, router, develop, publish, and device-test guidance now include
   the target, button, and cover defaults.
 - Version bumped to `0.2.1`.
+- Fixed a Windows `UnicodeEncodeError` when the dry-run printed a Chinese submit
+  command on a cp1252 console; stdio now uses UTF-8 with replacement.
 
 ## [0.2.0] - 2026-11-24
 

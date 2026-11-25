@@ -10,6 +10,7 @@ Auditor: AI Passport agent (self-audit; not an independent security review)
 | --- | --- | --- |
 | Python compile | `python3 -m compileall -q skills tests` | PASS |
 | Cover policy tests | `python3 -m unittest discover -s tests -v` | PASS (7 tests) |
+| Windows console encoding | `PYTHONIOENCODING=cp1252 python3 -m unittest discover -s tests -q` | PASS after fixing stdio |
 | Package manifest | `npm pack --dry-run` | PASS; 45 entries, no `__pycache__` |
 | Doctor | `python3 skills/passport-doctor/scripts/doctor.py` | PASS (publisher path warnings expected) |
 | Project scanner | `python3 skills/passport-router/scripts/scan_project.py --root . --json` | PASS; class C is expected for the bundle, not an app |
