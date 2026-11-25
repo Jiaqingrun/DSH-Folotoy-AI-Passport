@@ -57,7 +57,7 @@ Prefer the direct `py -3 ...py` form in automated runs.
 ## Acceptance checklist on Windows
 
 1. `py -3 --version` is 3.10+.
-2. `py -3 <base>\scripts\doctor.py` prints `PASS python` and all 8 skill lines.
+2. `py -3 <base>\scripts\doctor.py` prints `PASS python` and all 9 skill lines.
 3. The scanner returns the same class/hash as on macOS for 余烬.
 4. `preflight.py` produces the same PASS/FAIL lines as macOS, including the
    tracked-modification gate.

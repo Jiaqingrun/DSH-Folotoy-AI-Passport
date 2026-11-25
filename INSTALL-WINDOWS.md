@@ -1,6 +1,6 @@
 # AI Passport DSH 插件：Windows 测试包
 
-版本：`0.2.2`（Windows 兼容 beta）
+版本：`0.2.3`（Windows 兼容 beta）
 
 这是一个给群友测试 **Windows 兼容性** 的本地 DSH 插件包。macOS 已回归测试；GitHub Actions 的 `windows-latest` smoke test 已通过（doctor、scanner 和 `.ps1` 包装），但**真实 Windows 桌面/设备尚未验证**，所以需要你按下面的清单跑一遍并反馈。
 
@@ -85,7 +85,7 @@ py -3 skills\passport-router\scripts\scan_project.py --root . --json
 py -3 skills\passport-doctor\scripts\doctor.py
 ```
 
-期望：8 个技能 PASS；publisher skill 未安装、没有 `--root` 是 WARN；退出码 0。不要出现 `ModuleNotFoundError` 或编码错误。
+期望：9 个技能 PASS；publisher skill 未安装、没有 `--root` 是 WARN；退出码 0。不要出现 `ModuleNotFoundError` 或编码错误。
 
 ### 4.5 PowerShell 包装（重点）
 
@@ -112,7 +112,7 @@ py -3 --version：
 git --version：
 安装结果 application/warnings：
 Agent 选择器是否有 AI Passport：
-8 个技能是否都在：
+9 个技能是否都在：
 passport-router base directory：
 scanner 退出码/JSON 或报错：
 doctor 退出码/输出最后 10 行：

@@ -52,6 +52,24 @@ cable, and boot state. Retry only after a relevant correction and within the
 approved target/scope. Do not cycle indefinitely, kill unrelated processes,
 change system permissions, or erase Flash without new authorization.
 
+## Capture the real screen before judging UI
+
+After the approved firmware boots, capture the running framebuffer as the
+default visual evidence. Use the installed publisher's `capture-screen` command
+or the project's equivalent read-only `FAP_SCREENSHOT_V1` path; see
+[`references/real-screen-capture.md`](references/real-screen-capture.md). Save
+the PNG plus its `.fap-capture.json` receipt, verify the dimensions and hash,
+and open the actual PNG with `read_image`.
+
+Compare each changed screen and state with the intended design and accepted
+reference. Check title, text/glyphs, layout, contrast, HUD, button hints, and
+failure states; fix the firmware and recapture when they differ. Do not edit the
+screenshot, and never present a mockup, source tree, emulator window, phone
+photo, or stale image as a real capture. If the port, protocol, authorization,
+or fresh capture is unavailable, mark visual verification `NOT RUN` and state
+the remaining action. A capture proves static pixels only; it does not prove
+animation comfort or sustained smoothness.
+
 ## Observe and record
 
 After approved flashing, collect a bounded startup-log window with the matching
@@ -61,8 +79,8 @@ Record the image identity, test actions, outcomes, and failure reproduction.
 Stop the monitor before handing back the port. Keep raw logs local and sanitize
 secrets before sharing. Route crashes to `passport-debug` if available.
 
-Flashing success and clean logs do not prove screen rendering, audio quality,
-button behavior, RF performance, or sleep current. Whenever the input changed,
+Flashing success, clean logs, and a fresh capture do not prove audio quality,
+button behavior, RF performance, sleep current, or sustained smoothness. Whenever the input changed,
 exercise all three function buttons (UP/DOWN/OK) including every documented
 short, long, and double action, and compare each on-screen hint with the real
 key. Confirm no function key is dead, duplicated, arbitrary, or misleading; a

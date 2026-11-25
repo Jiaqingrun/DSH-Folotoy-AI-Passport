@@ -73,6 +73,21 @@ match the final name. Do this before continuing with the rest of the work.
 - If the folder already has the normalized name, the helper reports `unchanged`
   and does nothing. A later firmware-name change repeats the same step.
 
+## Verify the real screen and audit before calling it complete
+
+- **Real-screen first:** after a visual change, capture the running firmware's
+  framebuffer over `FAP_SCREENSHOT_V1` (or the project's equivalent read-only
+  path), open the actual PNG, and compare every changed screen/state with the
+  intended design and accepted reference. Fix the firmware and recapture. A
+  mockup, source review, emulator window, phone photo, or stale image is not a
+  real capture. If capture is unavailable, mark it `NOT RUN`; do not claim a
+  visual pass.
+- **Strict completion audit:** once the implementation is complete, load
+  `passport-code-audit` and perform its compliance and smoothness audit before
+  declaring the firmware done or handing it to publishing. P0/P1 findings block
+  completion; a clean static scan alone is not an audit. Record the audit
+  verdict and `Unverified` items separately from build and device results.
+
 ## Route specialist work only when needed
 
 If these skills are installed, use them for their stage. Otherwise read the

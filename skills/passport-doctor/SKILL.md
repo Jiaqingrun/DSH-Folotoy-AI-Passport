@@ -18,7 +18,7 @@ Check and report, in this order:
 1. DSH version is at least 0.2.2-rc.5 (the bundle's `engines.dsh`).
 2. `python --version` / `py -3 --version` is 3.10+.
 3. `git --version` works.
-4. The 8 skills are in the catalog: 5 official + router/publish/doctor.
+4. All 9 bundled skills are in the catalog: the FoloToy skill set plus router, publish, code-audit, and doctor.
 5. The official `folotoy-ai-passport-publisher` skill exists; if not, give the install instruction, do not bundle it.
 6. The publisher script responds to `--help`.
 7. The target project has a firmware candidate and a cover candidate; run the scanner if unsure.

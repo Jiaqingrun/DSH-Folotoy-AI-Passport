@@ -33,7 +33,7 @@ bundle，用于辅助 FoloToy AI Passport 项目从工具链搭建、固件构�
 
 | 项目 | 状态 |
 |---|---|
-| 版本 | `0.2.2` |
+| 版本 | `0.2.3` |
 | macOS | 已在 macOS 上完成回归测试 |
 | Linux | 代码路径已实现，尚未做系统化验证 |
 | Windows | **兼容代码已完成；CI 已在 windows-latest 通过 smoke test，但尚未在真实 Windows 桌面/设备上验证（beta）** |
@@ -51,6 +51,7 @@ Windows 兼容性的实现方式和未验证边界见
 | `passport-build` | 构建、烧录、归档固件 |
 | `passport-debug` | 串口/JTAG 调试与启动问题定位 |
 | `passport-develop` | 在现有项目中开发功能与修复问题 |
+| `passport-code-audit` | 固件完成后的严格合规与流畅性代码审计 |
 | `passport-device-test` | 设备级验收与回归测试 |
 | `passport-publish` | 发布前预检、商店文案检查、dry-run 和受控提交 |
 | `passport-doctor` | 检查 DSH、Python、Git、技能和发布依赖是否就绪 |
@@ -63,6 +64,12 @@ Windows 兼容性的实现方式和未验证边界见
   目录改成规范名称；只改应用根目录，不改 DSH bundle、其他项目、链接式
   worktree、符号链接、用户主目录或文件系统根目录。拒绝时停止报告，不强行
   重命名；重命名后更新会话 cwd 并复查 Git 状态。
+- **真实画面优先**：界面改动后默认通过 `FAP_SCREENSHOT_V1` 截取运行中固件的
+  真实帧缓冲，打开实际 PNG 对照预期设计并修正；设计稿、源码、模拟器、手机
+  照片或过期图片都不算真实截图。无法截取时标记 `NOT RUN`，不声称视觉通过。
+- **完成前严格审计**：固件实现完成后默认执行 `passport-code-audit`，检查项目／
+  安全合规与运行流畅性；P0/P1 问题阻塞完成和发布，必须附带构建门禁、真机
+  测量和审计记录，不能以静态扫描干净代替。
 - **三键完整使用**：每个应用或游戏必须使用 `UP`/`DOWN`/`OK` 三个功能键，
   为每个键定义明确、合乎逻辑的短按/长按/双击职责；屏幕提示必须与实体按键
   一致，禁止空置、重复或容易误触的绑定。专用电源键不当作应用功能键。
@@ -174,7 +181,7 @@ Windows 上的具体步骤、常见问题和反馈模板见
 ├── INSTALL-WINDOWS.md        # Windows 测试说明（中文）
 ├── docs/WINDOWS.md           # Windows 验收清单（英文）
 ├── docs/DETAIL.md            # 设计与实现细节
-├── skills/                   # 8 个技能
+├── skills/                   # 9 个技能
 ├── locale/                   # 中英文界面文案
 ├── LICENSE                   # MIT
 ├── NOTICE.md                 # 第三方技能与来源说明
@@ -234,7 +241,7 @@ session and select the **AI Passport** preset.
 
 | Item | Status |
 |---|---|
-| Version | `0.2.2` |
+| Version | `0.2.3` |
 | macOS | Regression-tested on macOS |
 | Linux | Code paths implemented; not systematically validated |
 | Windows | **Compatibility implemented; CI smoke test passes on windows-latest, but real Windows desktop/device validation is still pending (beta)** |
@@ -253,6 +260,7 @@ verification boundaries.
 | `passport-build` | Build, flash, and archive firmware |
 | `passport-debug` | Serial/JTAG debugging and boot issue diagnosis |
 | `passport-develop` | Feature development and fixes in existing projects |
+| `passport-code-audit` | Strict compliance and smoothness audit after firmware completion |
 | `passport-device-test` | Device-level acceptance and regression testing |
 | `passport-publish` | Preflight, store-copy checks, dry-run, and controlled submission |
 | `passport-doctor` | Check DSH, Python, Git, skills, and publishing prerequisites |
@@ -268,6 +276,16 @@ verification boundaries.
   symlink, the home directory, or a filesystem root. If the helper refuses,
   stop and report; do not force it. After renaming, switch cwd and recheck Git
   status.
+- **Real pixels first:** after a UI change, capture the running firmware
+  framebuffer through `FAP_SCREENSHOT_V1`, open the actual PNG, compare every
+  changed screen/state with the intended design, fix the firmware, and recapture.
+  A mockup, source review, emulator, phone photo, or stale image is not a real
+  capture. If capture is unavailable, mark it `NOT RUN`; never claim a visual pass.
+- **Strict completion audit:** after firmware implementation, load
+  `passport-code-audit` and audit project/security compliance and runtime
+  smoothness before declaring done or publishing. P0/P1 findings block
+  completion; build gates, real-device measurements, and an audit record are
+  required, and a clean static scan is not enough.
 - **Full button use:** every application/game must use all three function
   buttons (`UP`/`DOWN`/`OK`) with distinct, logical short/long/double actions.
   On-screen hints must match the real keys; no dead, duplicated, or accidental
@@ -389,7 +407,7 @@ and the feedback template.
 ├── INSTALL-WINDOWS.md        # Windows test guide (Chinese)
 ├── docs/WINDOWS.md           # Windows acceptance checklist (English)
 ├── docs/DETAIL.md            # design and implementation details
-├── skills/                   # 8 skills
+├── skills/                   # 9 skills
 ├── tests/                    # publish cover-policy regression tests
 ├── locale/                   # Chinese/English UI strings
 ├── LICENSE                   # MIT

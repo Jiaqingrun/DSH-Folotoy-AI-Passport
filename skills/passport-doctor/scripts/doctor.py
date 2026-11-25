@@ -16,6 +16,7 @@ from pathlib import Path
 
 SKILL_NAMES = (
     "passport-build",
+    "passport-code-audit",
     "passport-debug",
     "passport-develop",
     "passport-device-test",

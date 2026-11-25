@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-11-25
+
+### Added
+
+- Real-screen-first visual verification: the agent prefers a running-firmware
+  framebuffer capture over mockups, simulators, photos, source review, or stale
+  images; it opens the actual PNG, compares every changed screen/state, fixes
+  the firmware, and recaptures.
+- `passport-code-audit` skill for a strict post-implementation audit of project
+  and security compliance plus runtime smoothness, with a blocking P0/P1 rule.
+- Advisory `scan_code.py` signal collector for unsafe calls, heap calls,
+  blocking delays, full redraws, secret-like literals, and open markers.
+- Bilingual real-screen capture reference and bilingual compliance/smoothness
+  checklists.
+- Three scanner regression tests; total suite is now 19 tests.
+
+### Changed
+
+- `passport-develop`, `passport-device-test`, the persona, README, doctor, and
+  design notes now require real-pixel verification and the completion audit.
+- Version bumped to `0.2.3`; CI step renamed to regression tests.
+
 ## [0.2.2] - 2026-11-25
 
 ### Added

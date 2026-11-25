@@ -6,12 +6,14 @@ Unofficial agent preset for FoloToy AI Passport projects. Not affiliated with Fo
 
 - Classifies a project as A (official gate + firmware + cover), B (at least one publishable artifact but not a full gate), or C (no firmware binary and no cover).
 - Includes the official MIT skills for build, debug, develop, device test, and setup.
-- Adds router, publish, and doctor skills plus read-only scan/preflight/publish scripts.
+- Adds router, publish, code-audit, and doctor skills plus read-only scan/preflight/publish scripts.
 - Prepares a store submission with manual authorization; it never stores codes or tokens.
 - Defaults to AI Passport firmware when an app/game request names no platform.
 - Requires all three function buttons to have distinct, logical roles.
 - Requires a generated 3:4 render cover for a first upload; updates preserve the published cover.
 - Renames the app's project root folder when its firmware/app name is finalized or changed; refuses DSH bundles, linked worktrees, symlinks, home/root, and existing targets.
+- Prefers a real framebuffer capture of the running firmware over a mockup, simulator, photo, or stale image for UI comparison and correction.
+- Requires a strict code compliance and runtime-smoothness audit after implementation, before completion, device handoff, or publishing; P0/P1 findings block.
 
 ## Requirements
 
@@ -25,11 +27,12 @@ Unofficial agent preset for FoloToy AI Passport projects. Not affiliated with Fo
 ## Limits
 
 - No automatic authorization, no `--auto` default, no browser automation.
-- No device tests, no bundled image-generation model, and no guarantee of store
-  approval. First-upload cover rendering depends on the image tooling available
+- No device tests, no bundled image-generation model, no capture host bundled,
+  and no guarantee of store approval. First-upload cover rendering depends on the image tooling available
   in the current session; if it is unavailable or unfinished, the workflow must
   stop and ask rather than upload a placeholder.
 - macOS/Linux use `*.sh`/`*.py`; Windows use `*.ps1`/`py -3 *.py` (PowerShell 5.1+).
+- Real-screen verification needs an authorized connected device, a working `FAP_SCREENSHOT_V1` path, and a fresh capture; without them it is `NOT RUN`. Smoothness cannot be established from a static screenshot or source review alone.
 - Windows support is implemented by the Python scripts and PowerShell launchers; the official ESP-IDF setup skill may still recommend WSL for some toolchains. Windows is not yet tested.
 - Windows PowerShell execution policy can block `.ps1`; call `py -3 <script>.py` directly or use `powershell -ExecutionPolicy Bypass -File <script>.ps1`.
 - Windows acceptance checklist: `docs/WINDOWS.md`.

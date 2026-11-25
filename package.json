@@ -1,6 +1,6 @@
 {
   "name": "dsh-folotoy-ai-passport",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "description": "Unofficial DSH agent preset and Windows beta test bundle for FoloToy AI Passport projects.",
   "license": "MIT",
