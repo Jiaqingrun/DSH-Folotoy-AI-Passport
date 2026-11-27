@@ -20,7 +20,9 @@ description: 验证并打包 FoloToy AI Passport 固件，交付已校验的合�
    `sdkconfig.defaults` 生成隔离配置，不使用被忽略的根目录 `sdkconfig`。
    用户需要把本地独有设置交付到固件时，明确解决差异，不静默覆盖配置或
    构建不同版本。
-3. 迭代时运行最小相关检查，最终交付前执行 `./tools/validate.sh`。复用现有
+3. 迭代时运行最小相关检查，最终交付前执行 `./tools/validate.sh`。Windows 上
+   应改用项目自带的 `tools\validate.ps1` / `tools\validate.cmd`；只有 `.sh`
+   时用 Git Bash 运行，PowerShell 里 `./tools/validate.sh` 跑不起来。复用现有
    门禁，不另造构建流程。允许有效的自定义分区。仅构建检查可执行
    `./tools/validate.sh --firmware`，在报告中标明未运行的 host tests。
 4. 本轮失败不能证明 `build/` 中残留旧文件有效。修复范围内的失败或报告
@@ -33,7 +35,11 @@ description: 验证并打包 FoloToy AI Passport 固件，交付已校验的合�
 
 ```text
 python3 tools/archive_firmware.py verify <archive-directory>
+py -3 tools\archive_firmware.py verify <archive-directory>
 ```
+
+第一行是 macOS/Linux，第二行是 Windows PowerShell/cmd。Windows 没有
+`python3`，用 `py -3`（Python 启动器）或 `python`。
 
 报告实际归档路径、完整镜像哈希，以及 `manifest.json` 中匹配的 ELF 身份。
 归档保留 ELF、MAP、合并镜像、应用镜像、bootloader、分区表及 `flash_args`。

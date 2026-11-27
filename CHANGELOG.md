@@ -7,6 +7,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-11-27
+
+### Added
+
+- `tests/test_doctor_publisher.py` (3 tests) covering explicit,
+  `$DSH_HOME/skills`, home-clone, and platform-specific publisher locations.
+- `test_long_path_retries_without_cwd` for the Windows >260-character static
+  gate. Total suite: 37 tests.
+
+### Fixed
+
+- Windows field P1: `preflight.py --static` failed with `[WinError 267]` when the
+  project root exceeded 260 characters. It now retries the gate without a
+  `cwd` after `NotADirectoryError`; the gate is invoked by absolute path.
+- Windows field P2: `doctor.py` reported "publisher skill not installed" when the
+  official publisher was installed outside `$DSH_HOME/skills`. It now checks
+  `FOLOTOY_PUBLISHER_DIR`, the DSH home, `~/folotoy-publisher`, and platform
+  locations, and gives a `--publisher` hint when found.
+
+### Notes
+
+- The 0.2.3 adaptation completed a real build, flash, 8 real-screen captures,
+  and a community submission (project 2749, revision 6901, approved/published).
+  The 0.2.4 validation only exercised the publish dry-run; do not conflate them.
+- The Windows field run had 42 harness checks PASS and 36 tests after applying
+  the patch. The 37th test is the new P1 regression test; the shipped Python code
+  is the field-tested code.
+
+## [0.2.4] - 2026-11-26
+
+### Added
+
+- `.cmd` launchers (`doctor.cmd`, `preflight.cmd`, `publish.cmd`) that run under
+  the Windows default `Restricted` execution policy, where every `.ps1` is
+  refused.
+- `tests/test_windows_portability.py` (9 tests) guarding UTF-8 stdio, explicit
+  UTF-8 subprocess decoding, the launcher pairs, and DSH Desktop version
+  detection.
+- `tests/test_preflight_static.py` (4 tests) for Windows/POSIX static-gate order
+  and fallback when PowerShell/bash is unavailable. Total suite: 33 tests.
+
+### Fixed
+
+- Windows: `doctor.py`, `scan_project.py`, `preflight.py`, and
+  `lint_store_copy.py` now force UTF-8 on stdout/stderr. Before, a piped call on a
+  cp936/cp932 console produced mojibake for non-ASCII paths and raised
+  `UnicodeEncodeError` for names outside the code page (for example a project
+  folder containing an emoji).
+- Windows: subprocess output from `git` is decoded as UTF-8 with replacement
+  instead of the ANSI code page, which could raise `UnicodeDecodeError`.
+- Windows: `doctor.py` finds the DSH version from
+  `%USERPROFILE%\.dsh\dsh-runtimes\*\runtime.json`, because DSH Desktop does not
+  put `dsh` on `PATH`. `DSH_CLI` is honoured as an override.
+- Windows: `scan_project.py` reports repo-relative paths in POSIX form so cards
+  are byte-comparable with macOS, and directory skipping/firmware detection is
+  case-insensitive (Windows editors capitalize `Build`). Its class-A gate now
+  recognises `tools/validate.ps1` and `tools/validate.cmd` as well as `.sh`.
+- Windows: `preflight.py --static` prefers the project's `validate.ps1` /`.cmd`
+  and runs PowerShell with `-ExecutionPolicy Bypass`; if the preferred runner is
+  absent it now falls through to the next available gate instead of skipping.
+  Previously a project that shipped `validate.sh` plus `validate.ps1` was skipped
+  whenever `bash` was missing.
+- Windows: `rename_project.py` retries a rename that fails because another
+  program holds the folder open (WinError 32), and reports what to close.
+- Windows: the `.ps1` launchers switch `[Console]::OutputEncoding` to UTF-8 and no
+  longer set `$ErrorActionPreference = 'Stop'` around the native call, which used
+  to turn Python's stderr diagnostics into a terminating `NativeCommandError`.
+- Docs: `INSTALL-WINDOWS.md` claimed 8 skills (there are 9), told testers to run
+  `.ps1` directly although the default policy blocks it, and omitted the Git
+  install command and the UTF-8/`python3` caveats.
+- Windows: the `.cmd`/`.ps1` launchers now probe `py -3 -c "import sys"` and fall
+  back to `python` when `py.exe` exists but has no registered interpreter (the
+  state on the XPro validation machine). Regression test added.
+- Windows: real Windows 11 / PowerShell 5.1 / Python 3.13.5 installation run is
+  recorded in `docs/WINDOWS-REPORT.md`; Git end-to-end and real-device tests
+  remain unverified.
+
 ## [0.2.3] - 2026-11-25
 
 ### Added
@@ -27,7 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `passport-develop`, `passport-device-test`, the persona, README, doctor, and
   design notes now require real-pixel verification and the completion audit.
-- Version bumped to `0.2.3`; CI step renamed to regression tests.
+- Version bumped to `0.2.4`; CI step renamed to regression tests; API-compatible
+  with 0.2.3.
 
 ## [0.2.2] - 2026-11-25
 

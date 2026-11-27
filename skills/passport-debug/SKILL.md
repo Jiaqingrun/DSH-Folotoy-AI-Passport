@@ -29,7 +29,8 @@ automatically its source.
 ## Match symbols before decoding addresses
 
 For a saved gate build, verify its bundle with
-`python3 tools/archive_firmware.py verify <archive-directory>`. Compare the
+`python3 tools/archive_firmware.py verify <archive-directory>` on macOS/Linux, or
+`py -3 tools\archive_firmware.py verify <archive-directory>` on Windows. Compare the
 panic/boot ELF identity with `app_elf_sha256` in its manifest. A truncated log
 hash must match a unique candidate; ask for the complete identity if ambiguous.
 For other builds, obtain the ELF that produced the flashed image and evidence

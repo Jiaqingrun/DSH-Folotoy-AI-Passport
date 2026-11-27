@@ -34,6 +34,10 @@ description: 固件实现完成后，对 FoloToy AI Passport 代码进行合规�
 ./tools/validate.sh
 ```
 
+Windows 上 PowerShell 无法执行 `./tools/validate.sh`：优先用项目自带的
+`tools\validate.ps1` / `tools\validate.cmd`，只有 `.sh` 时通过 Git Bash 运行。
+在报告里写明实际运行的是哪一个门禁。
+
 运行本次改动所需的宿主测试，并在审计技能 base 目录执行：
 
 ```bash

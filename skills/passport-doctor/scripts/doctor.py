@@ -8,6 +8,7 @@ truth; doctor.sh and doctor.ps1 only locate a Python 3.10+ interpreter.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -27,14 +28,55 @@ SKILL_NAMES = (
 )
 
 
+def _configure_stdio() -> None:
+    """Emit UTF-8 even when stdout is a pipe.
+
+    On a Chinese/Japanese Windows install Python falls back to the ANSI code page
+    (cp936/cp932) for pipes. That mangles non-ASCII paths for the caller and
+    raises UnicodeEncodeError for names the code page cannot represent.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
 def _run(command: list[str], timeout: int = 15) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=timeout,
         check=False,
     )
+
+
+def _desktop_version(dsh_home: Path) -> str:
+    """Read the DSH Desktop version from its runtime manifest.
+
+    DSH Desktop keeps the CLI off PATH (it lives under resources/runtime/cli/bin),
+    so `shutil.which("dsh")` finds nothing even though a version is installed.
+    """
+    runtimes = dsh_home / "dsh-runtimes"
+    if not runtimes.is_dir():
+        return ""
+    for runtime in sorted(runtimes.iterdir()):
+        manifest = runtime / "runtime.json"
+        if not manifest.is_file():
+            continue
+        try:
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+        version = data.get("desktopVersion") if isinstance(data, dict) else None
+        if isinstance(version, str) and version.strip():
+            return version.strip()
+    return ""
 
 
 def _first_line(text: str) -> str:
@@ -44,7 +86,43 @@ def _first_line(text: str) -> str:
     return ""
 
 
+def _publisher_skill_candidates(dsh_home: Path) -> list[Path]:
+    """Likely locations of the official publisher skill.
+
+    The bundle must not ship the publisher, and it is not always installed under
+    ``$DSH_HOME/skills``: a manual clone such as ``C:\\folotoy-publisher\\...`` is
+    common. Checking only the DSH home reported "not installed" on a machine that
+    had already published successfully, which is worse than reporting nothing.
+    """
+    candidates: list[Path] = []
+    explicit = os.environ.get("FOLOTOY_PUBLISHER_DIR", "").strip()
+    if explicit:
+        candidates.append(Path(explicit).expanduser() / "SKILL.md")
+    candidates.extend(
+        (
+            dsh_home / "skills" / "folotoy-ai-passport-publisher" / "SKILL.md",
+            dsh_home / "skills" / "folotoy" / "folotoy-ai-passport-publisher" / "SKILL.md",
+            Path.home() / "folotoy-publisher" / "folotoy-ai-passport-publisher" / "SKILL.md",
+        )
+    )
+    if os.name == "nt":
+        candidates.append(Path("C:/folotoy-publisher/folotoy-ai-passport-publisher/SKILL.md"))
+        candidates.append(
+            Path(os.environ.get("ProgramFiles", "C:/Program Files"))
+            / "folotoy-publisher"
+            / "folotoy-ai-passport-publisher"
+            / "SKILL.md"
+        )
+    else:
+        candidates.append(Path("/opt/folotoy-publisher/folotoy-ai-passport-publisher/SKILL.md"))
+        candidates.append(
+            Path("/usr/local/share/folotoy-publisher/folotoy-ai-passport-publisher/SKILL.md")
+        )
+    return candidates
+
+
 def main(argv: list[str] | None = None) -> int:
+    _configure_stdio()
     parser = argparse.ArgumentParser(
         prog="doctor.py",
         description="Read-only environment checks for the AI Passport bundle.",
@@ -72,10 +150,10 @@ def main(argv: list[str] | None = None) -> int:
         failed = True
         print(f"FAIL {message}")
 
-    # DSH version: explicit DSH_VERSION wins; otherwise ask the CLI.
+    # DSH version: explicit DSH_VERSION wins; then the CLI; then DSH Desktop's manifest.
     version = os.environ.get("DSH_VERSION", "").strip()
     if not version:
-        dsh = shutil.which("dsh")
+        dsh = os.environ.get("DSH_CLI", "").strip() or shutil.which("dsh")
         if dsh:
             try:
                 proc = _run([dsh, "--version"])
@@ -83,10 +161,12 @@ def main(argv: list[str] | None = None) -> int:
                 version = line.split()[-1] if line else ""
             except (OSError, subprocess.SubprocessError):
                 version = ""
+    if not version:
+        version = _desktop_version(dsh_home)
     if version:
         ok(f"DSH version {version}")
     else:
-        warn("DSH version not detectable (set DSH_VERSION)")
+        warn("DSH version not detectable (set DSH_VERSION or DSH_CLI)")
 
     if sys.version_info >= (3, 10):
         ok(f"python {sys.version_info.major}.{sys.version_info.minor} ({sys.executable})")
@@ -101,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, subprocess.SubprocessError):
             bad("git found but --version failed")
     else:
-        bad("git missing")
+        bad("git missing (install Git for Windows: winget install --id Git.Git -e)")
 
     for name in SKILL_NAMES:
         if (skills_dir / name / "SKILL.md").is_file():
@@ -110,17 +190,17 @@ def main(argv: list[str] | None = None) -> int:
             bad(f"skill {name} missing")
 
     publisher_skill = ""
-    for candidate in (
-        dsh_home / "skills" / "folotoy-ai-passport-publisher" / "SKILL.md",
-        dsh_home / "skills" / "folotoy" / "folotoy-ai-passport-publisher" / "SKILL.md",
-    ):
+    for candidate in _publisher_skill_candidates(dsh_home):
         if candidate.is_file():
             publisher_skill = str(candidate)
             break
     if publisher_skill:
         warn(f"publisher skill found outside this bundle: {publisher_skill}")
     else:
-        warn("publisher skill not installed (required for publish, not bundled)")
+        warn(
+            "publisher not found in standard locations "
+            "(install it, set FOLOTOY_PUBLISHER_DIR, or pass --publisher <path>)"
+        )
 
     publisher = args.publisher.strip()
     if publisher:
@@ -138,7 +218,11 @@ def main(argv: list[str] | None = None) -> int:
             except (OSError, subprocess.SubprocessError) as exc:
                 bad(f"publisher --help failed: {exc}")
     else:
-        warn("publisher path not set (--publisher or PUBLISHER)")
+        if publisher_skill:
+            hint = Path(publisher_skill).parent / "scripts" / "publisher.py"
+            warn(f'publisher path not set (pass --publisher "{hint}" to validate it)')
+        else:
+            warn("publisher path not set (--publisher or PUBLISHER)")
 
     root = args.root.strip()
     if root:

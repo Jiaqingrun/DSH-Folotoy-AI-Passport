@@ -41,14 +41,14 @@ Read, in this order, if present:
 1. `AGENTS.md`
 2. `PROJECT.md`
 3. `CMakeLists.txt`
-4. `tools/validate.sh`
+4. `tools/validate.sh` / `.ps1` / `.cmd`
 5. `docs/` index or README
 
 The project's rules win over any family template. If a file is uncommitted/modified, say so; do not present it as the upstream baseline.
 
 ## 4. Classify
 
-- **A**: `AGENTS.md` + `tools/validate.sh` + CMake/ESP-IDF + firmware binary + cover. Can build, validate, and prepare a submission.
+- **A**: `AGENTS.md` + `tools/validate.sh` / `.ps1` / `.cmd` + CMake/ESP-IDF + firmware binary + cover. Can build, validate, and prepare a submission.
 - **B**: at least one publishable artifact (a built firmware binary or an exact 3:4 cover), but not a full A gate. Can inspect and build only with explicit user approval; publish only after the missing pieces are resolved.
 - **C**: no firmware binary and no cover. Analyze/design only; refuse publish. A source-only firmware tree (CMake/main but no `.bin`) is C until it is built and rescanned; the scanner is read-only by design.
 

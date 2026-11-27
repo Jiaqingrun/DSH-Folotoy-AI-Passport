@@ -33,7 +33,7 @@ Unofficial agent preset for FoloToy AI Passport projects. Not affiliated with Fo
   stop and ask rather than upload a placeholder.
 - macOS/Linux use `*.sh`/`*.py`; Windows use `*.ps1`/`py -3 *.py` (PowerShell 5.1+).
 - Real-screen verification needs an authorized connected device, a working `FAP_SCREENSHOT_V1` path, and a fresh capture; without them it is `NOT RUN`. Smoothness cannot be established from a static screenshot or source review alone.
-- Windows support is implemented by the Python scripts and PowerShell launchers; the official ESP-IDF setup skill may still recommend WSL for some toolchains. Windows is not yet tested.
+- Windows support is implemented by the Python scripts plus PowerShell and `.cmd` launchers; the official ESP-IDF setup skill may still recommend WSL for some toolchains. Windows 11 + PowerShell 5.1 + Python 3.13.5 installation and script paths were exercised, but Git end-to-end, PowerShell 7, real-device flashing, and long paths remain unverified.
 - Windows PowerShell execution policy can block `.ps1`; call `py -3 <script>.py` directly or use `powershell -ExecutionPolicy Bypass -File <script>.ps1`.
 - Windows acceptance checklist: `docs/WINDOWS.md`.
 - The publisher skill's own license/terms apply; do not redistribute it with this bundle.

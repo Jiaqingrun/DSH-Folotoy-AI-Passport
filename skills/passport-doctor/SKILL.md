@@ -11,7 +11,9 @@ Run `<base>/scripts/doctor.py` first. It is read-only and prints PASS/FAIL lines
 Cross-platform invocation:
 
 - macOS/Linux: `python3 <base>/scripts/doctor.py ...` or `<base>/scripts/doctor.sh ...`
-- Windows PowerShell: `py -3 <base>/scripts/doctor.py ...` or `<base>/scripts/doctor.ps1 ...`
+- Windows PowerShell: `py -3 <base>\scripts\doctor.py ...`, `<base>\scripts\doctor.cmd ...`,
+  or `<base>\scripts\doctor.ps1 ...` with `-ExecutionPolicy Bypass` (the Windows
+  default policy is Restricted and refuses any `.ps1`).
 
 Check and report, in this order:
 

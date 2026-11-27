@@ -33,14 +33,15 @@ bundle，用于辅助 FoloToy AI Passport 项目从工具链搭建、固件构�
 
 | 项目 | 状态 |
 |---|---|
-| 版本 | `0.2.3` |
+| 版本 | `0.2.5` |
 | macOS | 已在 macOS 上完成回归测试 |
 | Linux | 代码路径已实现，尚未做系统化验证 |
-| Windows | **兼容代码已完成；CI 已在 windows-latest 通过 smoke test，但尚未在真实 Windows 桌面/设备上验证（beta）** |
-| 商店发布 / 真机烧录 | 不在本仓库测试范围 |
+| Windows | **已在单台 Windows 11 实机完成 0.2.4 现场验证（0.2.5 为现场补丁 + 测试/文档）：安装、9 技能、Git 端到端、中文/emoji、`.cmd` Restricted、`.ps1` Bypass、PowerShell 7、324 字符路径、UNC、publish dry-run；0.2.3 适配版另完成真机构建/烧录/实屏/社区发布。多机覆盖仍未做（beta）。** |
+| 商店发布 / 真机烧录 | 0.2.3 现场链路做过；0.2.4 仅 dry-run/validate 复验。不是对所有设备/商店规则的保证。 |
 
 Windows 兼容性的实现方式和未验证边界见
-[Windows 测试说明](INSTALL-WINDOWS.md) 与 [Windows 验收清单](docs/WINDOWS.md)。
+[Windows 测试说明](INSTALL-WINDOWS.md)、[Windows 验收清单](docs/WINDOWS.md) 与
+[Windows 实机报告](docs/WINDOWS-REPORT.md)。
 
 ### 功能
 
@@ -97,6 +98,8 @@ Windows 兼容性的实现方式和未验证边界见
 - Python **3.10+**。
 - Git（`passport-doctor` 和项目扫描会使用）。
 - Windows 用户需要 PowerShell 5.1+；可以直接运行 `.py`，不要求 WSL/Git Bash。
+  Windows 客户端默认执行策略是 Restricted，`.ps1` 需要 `-ExecutionPolicy Bypass`，
+  或者直接用同目录下的 `.cmd` 包装（`doctor.cmd` / `preflight.cmd` / `publish.cmd`）。
 - 构建固件仍然需要官方 ESP-IDF 工具链；Windows 上的 ESP-IDF 安装方式以官方文档为准。
 
 ### 安装
@@ -146,8 +149,9 @@ py -3 skills\passport-doctor\scripts\doctor.py
 py -3 skills\passport-router\scripts\scan_project.py --root C:\path\to\project --json
 ```
 
-`.sh` 和 `.ps1` 是薄包装，分别定位 macOS/Linux 与 Windows 的 Python。
-PowerShell 执行策略拦截 `.ps1` 时，直接运行对应的 `.py` 即可。
+`.sh`、`.ps1`、`.cmd` 是薄包装，分别定位 macOS/Linux、Windows PowerShell 和
+Windows cmd 下的 Python。PowerShell 执行策略拦截 `.ps1` 时，用同目录的 `.cmd`，
+或者直接运行对应的 `.py`。
 
 `passport-publish` 的预检、文案检查与发布流程见
 [`skills/passport-publish/SKILL.md`](skills/passport-publish/SKILL.md)；
@@ -159,7 +163,7 @@ PowerShell 执行策略拦截 `.ps1` 时，直接运行对应的 `.py` 即可。
 |---|---|---|---|
 | macOS | `python3` | `.sh` | 已回归测试 |
 | Linux | `python3` | `.sh` | 已实现，未系统验证 |
-| Windows | `py -3` / `python` | `.ps1` | 已实现，**未实机验证** |
+| Windows | `py -3` / `python` | `.ps1`（需 Bypass）/ `.cmd` | 已实现；单台 Windows 11 实机跑通安装/脚本/Git/长路径/UNC/PS7；0.2.3 另完成真机发布，0.2.4 仅 dry-run |
 
 Windows 上的具体步骤、常见问题和反馈模板见
 [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md)。
@@ -241,15 +245,15 @@ session and select the **AI Passport** preset.
 
 | Item | Status |
 |---|---|
-| Version | `0.2.3` |
+| Version | `0.2.5` |
 | macOS | Regression-tested on macOS |
 | Linux | Code paths implemented; not systematically validated |
-| Windows | **Compatibility implemented; CI smoke test passes on windows-latest, but real Windows desktop/device validation is still pending (beta)** |
-| Store publishing / device flashing | Out of scope for this repository's tests |
+| Windows | **0.2.4 field-verified on one Windows 11 machine (0.2.5 is the field patch + tests/docs): install, 9 skills, Git end-to-end, CJK/emoji, `.cmd` Restricted, `.ps1` Bypass, PowerShell 7, 324-char path, UNC, publish dry-run; the 0.2.3 adaptation also completed real device build/flash/screenshots/community publish. Multi-machine coverage is still beta.** |
+| Store publishing / device flashing | The 0.2.3 field run covered device/publish; 0.2.4 only dry-run/validate. Not a guarantee for every device or store rule. |
 
-See [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md) and
-[docs/WINDOWS.md](docs/WINDOWS.md) for the Windows implementation and
-verification boundaries.
+See [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md), [docs/WINDOWS.md](docs/WINDOWS.md),
+and [docs/WINDOWS-REPORT.md](docs/WINDOWS-REPORT.md) for the Windows
+implementation and verification boundaries.
 
 ### Features
 
@@ -317,6 +321,9 @@ verification boundaries.
 - Python **3.10+**.
 - Git (used by `passport-doctor` and project scans).
 - Windows: PowerShell 5.1+; the `.py` entry points work without WSL or Git Bash.
+  The Windows client defaults to the `Restricted` execution policy, so `.ps1`
+  needs `-ExecutionPolicy Bypass`; otherwise use the `.cmd` launchers
+  (`doctor.cmd` / `preflight.cmd` / `publish.cmd`) in the same directories.
 - Firmware builds still require the official ESP-IDF toolchain. Follow FoloToy and
   Espressif's official installation guidance on Windows.
 
@@ -367,9 +374,10 @@ py -3 skills\passport-doctor\scripts\doctor.py
 py -3 skills\passport-router\scripts\scan_project.py --root C:\path\to\project --json
 ```
 
-The `.sh` and `.ps1` files are thin launchers that locate Python on macOS/Linux and
-Windows respectively. If execution policy blocks a `.ps1`, run the corresponding
-`.py` directly.
+The `.sh`, `.ps1`, and `.cmd` files are thin launchers that locate Python on
+macOS/Linux, Windows PowerShell, and Windows cmd respectively. If execution
+policy blocks a `.ps1`, use the `.cmd` beside it, or run the corresponding `.py`
+directly.
 
 The publishing preflight, copy checks, and controlled workflow are documented in
 [`skills/passport-publish/SKILL.md`](skills/passport-publish/SKILL.md). A real
@@ -382,7 +390,7 @@ is not bundled here.
 |---|---|---|---|
 | macOS | `python3` | `.sh` | Regression-tested |
 | Linux | `python3` | `.sh` | Implemented; not systematically tested |
-| Windows | `py -3` / `python` | `.ps1` | Implemented; **not yet tested on real Windows** |
+| Windows | `py -3` / `python` | `.ps1` (Bypass) / `.cmd` | Implemented; one real Windows 11 run covered install/scripts/Git/long path/UNC/PS7; 0.2.3 did real device/publish, 0.2.4 dry-run only |
 
 See [INSTALL-WINDOWS.md](INSTALL-WINDOWS.md) for the Windows steps, known issues,
 and the feedback template.

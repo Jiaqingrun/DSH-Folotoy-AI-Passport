@@ -12,13 +12,32 @@ import sys
 from pathlib import Path
 
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "dist", ".direnv", "managed_components"}
+_SKIP_DIRS_FOLDED = {name.casefold() for name in SKIP_DIRS}
+
+
+def _configure_stdio() -> None:
+    """Emit UTF-8 even when stdout is a pipe (Windows ANSI code pages mangle it)."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
+
+
+def _relative(path: Path, root: Path) -> str:
+    """Report repo-relative POSIX paths so Windows and macOS cards are comparable."""
+    return path.relative_to(root).as_posix()
 
 
 def git(root: Path, *args: str) -> str | None:
     try:
         proc = subprocess.run(
             ["git", "-C", str(root), *args],
-            capture_output=True, text=True, timeout=10, check=False,
+            capture_output=True, encoding="utf-8", errors="replace",
+            timeout=10, check=False,
         )
         return proc.stdout.strip() if proc.returncode == 0 else None
     except (OSError, subprocess.SubprocessError):
@@ -80,13 +99,14 @@ def image_size(path: Path) -> tuple[int, int] | None:
 
 def walk(root: Path):
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [name for name in dirnames if name not in SKIP_DIRS]
+        dirnames[:] = [name for name in dirnames if name.casefold() not in _SKIP_DIRS_FOLDED]
         base = Path(dirpath)
         for name in filenames:
             yield base / name
 
 
 def main() -> int:
+    _configure_stdio()
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
     parser.add_argument("--json", action="store_true")
@@ -107,16 +127,17 @@ def main() -> int:
         lower = path.name.lower()
         if not lower.endswith(".bin"):
             continue
-        if "build" not in path.parts and "publish" not in path.parts:
+        parts = [part.casefold() for part in path.parts]
+        if "build" not in parts and "publish" not in parts:
             continue
-        if "build" in path.parts:
-            after_build = path.parts[path.parts.index("build") + 1:]
+        if "build" in parts:
+            after_build = parts[parts.index("build") + 1:]
             if "firmware" in after_build:
                 continue  # skip historical build/firmware/<sha>/... copies
         if not any(token in lower for token in ("full", "merged", "firmware")):
             continue
         firmware.append({
-            "path": str(path.relative_to(root)),
+            "path": _relative(path, root),
             "bytes": path.stat().st_size,
             "sha256": sha256(path),
         })
@@ -130,16 +151,20 @@ def main() -> int:
             continue
         size = image_size(path)
         covers.append({
-            "path": str(path.relative_to(root)),
+            "path": _relative(path, root),
             "bytes": path.stat().st_size,
             "width": size[0] if size else None,
             "height": size[1] if size else None,
         })
 
+    validate_gate = any(
+        (root / "tools" / name).is_file()
+        for name in ("validate.sh", "validate.ps1", "validate.cmd")
+    )
     signals = {
         "agents": (root / "AGENTS.md").is_file(),
         "project": (root / "PROJECT.md").is_file(),
-        "validate": (root / "tools/validate.sh").is_file(),
+        "validate": validate_gate,
         "check_repo": (root / "tools/check_repo.py").is_file(),
         "cmake": (root / "CMakeLists.txt").is_file(),
         "idf": (root / "sdkconfig").is_file() or (root / "sdkconfig.defaults").is_file(),
@@ -154,7 +179,7 @@ def main() -> int:
 
     missing = []
     if not gate:
-        missing.append("AGENTS.md + tools/validate.sh gate")
+        missing.append("AGENTS.md + tools/validate.sh/.ps1/.cmd gate")
     if not firmware_ok:
         missing.append("firmware binary")
     if not cover_ok:

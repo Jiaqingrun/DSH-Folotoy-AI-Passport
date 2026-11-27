@@ -12,7 +12,20 @@ import os
 import shutil
 import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
+
+
+def _configure_stdio() -> None:
+    """Emit UTF-8 even when stdout is a pipe (Windows ANSI code pages mangle it)."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
 
 
 def _run(command: list[str], cwd: Path | None = None, timeout: int = 30) -> subprocess.CompletedProcess[str]:
@@ -20,7 +33,8 @@ def _run(command: list[str], cwd: Path | None = None, timeout: int = 30) -> subp
         command,
         cwd=str(cwd) if cwd else None,
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=timeout,
         check=False,
     )
@@ -30,45 +44,99 @@ def _size(path: Path) -> int:
     return path.stat().st_size
 
 
-def _run_static(root: Path) -> tuple[bool, str]:
-    """Run the project's static validation when a supported entry point exists."""
-    checks: list[tuple[str, list[str] | None]] = []
+def _static_candidates(
+    root: Path, platform_name: str | None = None
+) -> list[tuple[Path, Callable[[], tuple[list[str] | None, str]]]]:
+    """Return existing static-gate candidates in platform order.
+
+    On Windows, `tools/validate.sh` is a poor first choice: bash may be absent and
+    Git Bash/WSL can mangle `C:\\...` arguments. Prefer the project's PowerShell
+    or cmd gate there. Tests use `platform_name` to check both orders on one host.
+    """
     sh_script = root / "tools" / "validate.sh"
     ps_script = root / "tools" / "validate.ps1"
     cmd_script = root / "tools" / "validate.cmd"
 
-    if sh_script.is_file():
+    def via_bash() -> tuple[list[str] | None, str]:
         bash = shutil.which("bash")
-        if bash:
-            checks.append((f"bash {sh_script}", [bash, str(sh_script), "--static"]))
-        else:
-            return (False, f"static check skipped: bash not found for {sh_script}")
-    elif ps_script.is_file():
+        if not bash:
+            return None, f"static check skipped: bash not found for {sh_script}"
+        return [bash, str(sh_script), "--static"], ""
+
+    def via_powershell() -> tuple[list[str] | None, str]:
         pwsh = shutil.which("pwsh") or shutil.which("powershell")
-        if pwsh:
-            checks.append((f"powershell {ps_script}", [pwsh, "-NoProfile", "-File", str(ps_script), "-Static"]))
-        else:
-            return (False, f"static check skipped: PowerShell not found for {ps_script}")
-    elif cmd_script.is_file():
+        if not pwsh:
+            return None, f"static check skipped: PowerShell not found for {ps_script}"
+        return (
+            [
+                pwsh, "-NoProfile", "-ExecutionPolicy", "Bypass",
+                "-File", str(ps_script), "-Static",
+            ],
+            "",
+        )
+
+    def via_cmd() -> tuple[list[str] | None, str]:
         comspec = os.environ.get("COMSPEC") or "cmd.exe"
-        checks.append((f"cmd {cmd_script}", [comspec, "/c", str(cmd_script), "--static"]))
-    else:
+        return [comspec, "/c", str(cmd_script), "--static"], ""
+
+    candidates: list[tuple[Path, Callable[[], tuple[list[str] | None, str]]]] = [
+        (ps_script, via_powershell),
+        (cmd_script, via_cmd),
+        (sh_script, via_bash),
+    ]
+    if (platform_name or os.name) != "nt":
+        candidates = [
+            (sh_script, via_bash),
+            (ps_script, via_powershell),
+            (cmd_script, via_cmd),
+        ]
+    return [(script, runner) for script, runner in candidates if script.is_file()]
+
+
+def _static_order(root: Path, platform_name: str | None = None) -> list[str]:
+    """Return existing gate filenames in the order they would be tried."""
+    return [script.name for script, _ in _static_candidates(root, platform_name)]
+
+
+def _run_static(root: Path, platform_name: str | None = None) -> tuple[bool, str]:
+    """Run the first available project static gate; fall back if its runner is missing."""
+    candidates = _static_candidates(root, platform_name)
+    if not candidates:
         return (False, "static check skipped: tools/validate.sh, .ps1, or .cmd not found")
 
-    for label, command in checks:
-        if command is None:
-            continue
+    command: list[str] | None = None
+    label = ""
+    skipped: list[str] = []
+    for script, runner in candidates:
+        command, reason = runner()
+        label = script.name
+        if command is not None:
+            break
+        skipped.append(reason)
+
+    if command is None:
+        return (False, "; ".join(skipped))
+
+    try:
+        proc = _run(command, cwd=root)
+    except NotADirectoryError:
+        # Windows cannot give a >260-character directory to CreateProcess as the
+        # child working directory (WinError 267). The gate still runs from its
+        # absolute path, so retry without cwd instead of failing the check.
         try:
-            proc = _run(command, cwd=root)
+            proc = _run(command, cwd=None)
         except (OSError, subprocess.SubprocessError) as exc:
             return (False, f"static checks failed: {exc}")
-        if proc.returncode != 0:
-            detail = (proc.stderr or proc.stdout or "").strip().splitlines()
-            return (False, f"static checks failed ({label}): {detail[0] if detail else 'exit ' + str(proc.returncode)}")
+    except (OSError, subprocess.SubprocessError) as exc:
+        return (False, f"static checks failed: {exc}")
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "").strip().splitlines()
+        return (False, f"static checks failed ({label}): {detail[0] if detail else 'exit ' + str(proc.returncode)}")
     return (True, "static checks")
 
 
 def main(argv: list[str] | None = None) -> int:
+    _configure_stdio()
     parser = argparse.ArgumentParser(
         prog="preflight.py",
         description="Check files, publisher, size limits, and git state before publishing.",
@@ -123,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
         except (OSError, subprocess.SubprocessError):
             bad("git found but --version failed")
     else:
-        bad("git missing")
+        bad("git missing (install Git for Windows: winget install --id Git.Git -e)")
 
     publisher = Path(args.publisher).expanduser() if args.publisher else None
     if publisher and publisher.is_file():

@@ -39,6 +39,10 @@ Run the project's documented gates, at minimum:
 ./tools/validate.sh
 ```
 
+On Windows, `./tools/validate.sh` is not runnable from PowerShell: use the
+project's `tools\validate.ps1` / `tools\validate.cmd` when present, otherwise run
+the `.sh` through Git Bash. Record which gate actually ran.
+
 Run host tests required by the change, and the scanner below from the audit
 skill base directory:
 

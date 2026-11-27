@@ -44,7 +44,9 @@ whenToUse: The user says publish, submit, update the store, or asks to prepare r
 2. Run the preflight with the project root, firmware, cover that will be
    uploaded (`--root` plus the preserved cover for updates), and publisher path:
    - macOS/Linux: `<base>/scripts/preflight.sh ...` or `python3 <base>/scripts/preflight.py ...`
-   - Windows: `<base>/scripts/preflight.ps1 ...` or `py -3 <base>/scripts/preflight.py ...`
+   - Windows: `<base>\scripts\preflight.cmd ...` (works under the default execution policy),
+     or `py -3 <base>\scripts\preflight.py ...`. `preflight.ps1` only runs with
+     `-ExecutionPolicy Bypass`.
    Fix every FAIL before continuing.
 3. Run the official validator:
    - macOS/Linux: `python3 <publisher>/scripts/publisher.py validate --kind firmware --firmware <fw> --cover <cover>`
@@ -59,7 +61,8 @@ whenToUse: The user says publish, submit, update the store, or asks to prepare r
      cover is outside the project root. Pass a new `--cover` only when the user
      explicitly requested a cover change.
    - macOS/Linux: `<base>/scripts/publish.sh --dry-run ...` or `python3 <base>/scripts/publish.py --dry-run ...`
-   - Windows: `<base>/scripts/publish.ps1 --dry-run ...` or `py -3 <base>/scripts/publish.py --dry-run ...`
+   - Windows: `<base>\scripts\publish.cmd --dry-run ...` or
+     `py -3 <base>\scripts\publish.py --dry-run ...`
 7. Only after the user explicitly confirms, run the same script with `--execute --confirmed ...`. `--confirmed` alone only prints the command; it does not upload. It never passes `--auto`.
 8. Save the receipt JSON. Report play id, revision, updatedAt, and firmware sha256. Without a receipt, say "提交未确认成功", not "已发布".
 

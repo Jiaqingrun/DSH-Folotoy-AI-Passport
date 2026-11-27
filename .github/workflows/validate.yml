@@ -48,6 +48,11 @@ jobs:
       - name: Smoke test scanner
         run: python skills/passport-router/scripts/scan_project.py --root . --json
 
+      - name: Smoke test cmd launcher
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: skills\passport-doctor\scripts\doctor.cmd
+
       - name: Smoke test PowerShell launcher
         if: runner.os == 'Windows'
         shell: pwsh

@@ -25,7 +25,8 @@ description: 根据日志和重启、栈异常、看门狗、文字空白、黑�
 ## 先匹配符号，再解码地址
 
 对于保留的门禁构建，运行
-`python3 tools/archive_firmware.py verify <archive-directory>` 验证归档，
+`python3 tools/archive_firmware.py verify <archive-directory>`（macOS/Linux）或
+`py -3 tools\archive_firmware.py verify <archive-directory>`（Windows）验证归档，
 将崩溃／启动日志的 ELF 身份与清单的 `app_elf_sha256` 对比。截断哈希必须
 唯一匹配一个候选；存在歧义时索取完整身份。其他构建需要取得产生已烧录镜像
 的 ELF 及身份依据。相近 Git 版本或之后重新构建的文件不能替代。

@@ -22,6 +22,7 @@ import json
 import os
 import re
 import sys
+import time
 import unicodedata
 import uuid
 from pathlib import Path
@@ -93,6 +94,25 @@ def _inside(path: Path, parent: Path) -> bool:
         return False
 
 
+def _rename_with_retry(source: Path, target: Path, attempts: int = 6) -> None:
+    """Rename, retrying while Windows reports the directory as busy.
+
+    Windows refuses to rename a directory that any process holds open (an editor,
+    a terminal cwd, an indexer, a virus scanner) with WinError 32/5. On macOS the
+    same call usually succeeds, so a single attempt is not enough here.
+    """
+    delay = 0.15
+    for attempt in range(attempts):
+        try:
+            source.rename(target)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(delay)
+            delay = min(delay * 2, 2.0)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="rename_project.py",
@@ -148,10 +168,15 @@ def main(argv: list[str] | None = None) -> int:
                     os.chdir(root.parent)
                 if status == "renamed-case-only":
                     temporary = root.parent / f".rename-{uuid.uuid4().hex}"
-                    root.rename(temporary)
-                    temporary.rename(target)
+                    _rename_with_retry(root, temporary)
+                    _rename_with_retry(temporary, target)
                 else:
-                    root.rename(target)
+                    _rename_with_retry(root, target)
+            except PermissionError as exc:
+                return _fail(
+                    f"rename failed, the folder is held open by another program: {exc}\n"
+                    "close editors, terminals, and Explorer windows showing it, then retry"
+                )
             except OSError as exc:
                 return _fail(f"rename failed: {exc}")
             if not target.is_dir():

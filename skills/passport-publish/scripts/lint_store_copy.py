@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 MAX_INSTRUCTIONS = 8000
@@ -14,6 +15,18 @@ PLACEHOLDERS = ("<TODO>", "TODO", "Lorem ipsum", "xxx", "待补充")
 TOKENLIKE = re.compile(
     r"(?i)(?:token|secret|api[_-]?key|password)\s*[:=]\s*[A-Za-z0-9_\-]{8,}"
 )
+
+
+def _configure_stdio() -> None:
+    """Emit UTF-8 even when stdout is a pipe (Windows ANSI code pages mangle it)."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            pass
 
 
 def read_text(path: str | None) -> tuple[str | None, str | None]:
@@ -26,9 +39,12 @@ def read_text(path: str | None) -> tuple[str | None, str | None]:
         return target.read_text(encoding="utf-8"), None
     except UnicodeDecodeError as error:
         return None, f"not UTF-8: {path}: {error}"
+    except OSError as error:
+        return None, f"unreadable: {path}: {error}"
 
 
 def main() -> int:
+    _configure_stdio()
     parser = argparse.ArgumentParser()
     parser.add_argument("--instructions-zh", required=True)
     parser.add_argument("--instructions-en")

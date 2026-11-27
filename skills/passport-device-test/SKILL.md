@@ -24,7 +24,8 @@ acceptance checklist, not every peripheral test for every change.
    that the physical device is disconnected. Provide local steps if necessary.
 3. Bind the target device to an exact verified firmware and the user's data
    requirements. For a gate-produced bundle run
-   `python3 tools/archive_firmware.py verify <archive-directory>` and compare
+   `python3 tools/archive_firmware.py verify <archive-directory>` (or
+   `py -3 tools\archive_firmware.py verify <archive-directory>` on Windows) and compare
    the chosen image hash with its manifest. For other builds require equivalent
    target/layout evidence; do not assume any `.bin` is a merged image.
 4. Confirm the specific port, firmware, intended write range/data impact, and

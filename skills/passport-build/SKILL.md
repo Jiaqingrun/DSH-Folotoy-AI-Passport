@@ -23,10 +23,12 @@ from that checkout; never infer a developer-specific IDF path.
    the delivered firmware, resolve that mismatch explicitly; do not silently
    overwrite configuration or build a different variant.
 3. Run the smallest relevant checks while iterating and `./tools/validate.sh`
-   before final delivery. This is the existing gate, not a replacement build
-   pipeline. Custom valid partition layouts are allowed. On a requested
-   build-only check, `./tools/validate.sh --firmware` is available; identify any
-   omitted host tests in the report.
+   before final delivery. On Windows use `tools\validate.ps1`/`tools\validate.cmd`
+   when the project ships them, otherwise run `tools/validate.sh` through Git
+   Bash; `./tools/validate.sh` does not work in PowerShell. This is the existing
+   gate, not a replacement build pipeline. Custom valid partition layouts are
+   allowed. On a requested build-only check, `./tools/validate.sh --firmware` is
+   available; identify any omitted host tests in the report.
 4. A failed run does not validate an old file still present under `build/`.
    Correct in-scope failures or report the blocker. Never deliver a stale
    artifact as the result of the failed build.
@@ -39,7 +41,11 @@ handoff with:
 
 ```text
 python3 tools/archive_firmware.py verify <archive-directory>
+py -3 tools\archive_firmware.py verify <archive-directory>
 ```
+
+The first line is macOS/Linux, the second is Windows PowerShell/wcmd. Windows has
+no `python3`; use `py -3` (Python launcher) or `python`.
 
 Report the actual archive path, full-image hash, and matching ELF identity from
 `manifest.json`. The archive retains ELF, MAP, merged, application, bootloader,
